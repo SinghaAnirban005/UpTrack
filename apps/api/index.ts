@@ -1,12 +1,15 @@
-import express from "express"
 import { Express } from "express"
+import express from "express"
 import "dotenv/config"
+import authRoutes from "../api/Controllers/Auth.js"
 
 export const app: Express = express()
 
 app.use(express.json())
 
 const PORT = process.env.PORT_NO
+
+app.use("/api/v1", authRoutes)
 
 app.listen(PORT, (err) => {
     if(err){
