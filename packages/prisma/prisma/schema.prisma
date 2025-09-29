@@ -22,29 +22,29 @@ model user {
 }
 
 model website {
-  id    String  @id @default(uuid())
-  url   String
-  user_id    String
+  id           String  @id @default(uuid())
+  url          String
+  user_id      String
   time_added   DateTime
-  ticks       websiteTick[]
-  user    user  @relation(fields: [user_id], references: [id])
+  ticks        websiteTick[]
+  user         user  @relation(fields: [user_id], references: [id])
 }
 
 model region {
-  id    String    @id   @default(uuid())
-  name  String
-  ticks   websiteTick[]
+  id       String    @id   @default(uuid())
+  name     String
+  ticks    websiteTick[]
 }
 
 model websiteTick {
-  id                String @id  @default(uuid())
+  id                 String @id  @default(uuid())
   status             websiteStatus
   response_time_ms   Int
-  region  region    @relation(fields: [region_id], references: [id])
-  website website   @relation(fields: [website_id], references: [id])
-  website_id        String  
-  region_id         String
-  createdAt         DateTime @default(now())
+  region             region     @relation(fields: [region_id], references: [id])
+  website            website    @relation(fields: [website_id], references: [id])
+  website_id         String  
+  region_id          String
+  createdAt          DateTime @default(now())
 }
 
 enum websiteStatus {
