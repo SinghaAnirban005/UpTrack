@@ -10,12 +10,12 @@ const router:Router  = Router()
 router.post("/login", async(req: Request, res: Response) => {
     const { username , password } = req.body;
 
-    console.log("env ", process.env.JWT_SECRET)
-
     if(!username || !password){
         res.status(401).json({
             message: "Username or Password is missing"
         })
+
+        return;
     }
 
     const user = await prismaClient.user.findFirst({
@@ -66,12 +66,13 @@ router.post("/login", async(req: Request, res: Response) => {
 })
 
 router.post("/signup", async(req: Request, res: Response) => {
-    const { username , password } = req.body();
+    const { username , password } = req.body;
 
-    if(!username || password){
+    if(!username || !password){
         res.status(401).json({
             message: "Username or Password is missing"
         })
+        return;
     }
 
     const encryptedPass = await bcrypt.hash(password, 10);
@@ -82,7 +83,7 @@ router.post("/signup", async(req: Request, res: Response) => {
         }
     })
 
-    if(existingUser){
+    if(existingUser.length > 0){
         res.status(401).json({
             message: "User already exists"
         })

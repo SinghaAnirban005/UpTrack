@@ -48,11 +48,12 @@ router.post("/login", async (req, res) => {
     return;
 });
 router.post("/signup", async (req, res) => {
-    const { username, password } = req.body();
-    if (!username || password) {
+    const { username, password } = req.body;
+    if (!username || !password) {
         res.status(401).json({
             message: "Username or Password is missing"
         });
+        return;
     }
     const encryptedPass = await bcrypt.hash(password, 10);
     const existingUser = await prismaClient.user.findMany({
