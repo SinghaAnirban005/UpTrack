@@ -1,7 +1,7 @@
 import "dotenv/config"
-import { xReadGroup, xAckBulk } from "redis-stream/redis"
 import axios from "axios"
 import { prismaClient } from "prisma/client"
+import { xReadGroup, xAckBulk } from "redis-stream/client"
 
 const REGION_ID = process.env.REGION_ID as string
 const WORKER_ID = process.env.WORKER_ID as string
@@ -10,10 +10,13 @@ async function main() {
     while(1) {
         const response = await xReadGroup(REGION_ID, WORKER_ID)
 
+        if(!response){
+            continue
+        }
+
         let promises = response?.map(({message}) => fetchWebsite(message.url, message.id))
 
         await Promise.all(promises as [])
-
 
         await xAckBulk(REGION_ID, response?.map((event) => event.id) as string[])
     }

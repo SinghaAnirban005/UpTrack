@@ -1,6 +1,5 @@
 import { prismaClient } from "prisma/client"
-import { xAddBulk } from "redis-stream/redis"
-
+import { xAddBulk } from "redis-stream/client"
 
 async function main() {
     let websites = await prismaClient.website.findMany({
@@ -10,12 +9,14 @@ async function main() {
         }
     })
 
-    await xAddBulk(websites.map(website => (
-        {
-            url: website.url,
-            id: website.id
-        }
-    )))
+    if(websites.length > 0){
+        await xAddBulk(websites.map(website => (
+            {
+                url: website.url,
+                id: website.id
+            }
+        )))
+    }
     
 }
 

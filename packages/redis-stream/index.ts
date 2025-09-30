@@ -39,7 +39,7 @@ export const xAddBulk = async(websites: WebsiteEvent[]) => {
     }
 }
 
-export async function xReadGroup(consumerGroup: string, workerId: string){
+export const xReadGroup = async(consumerGroup: string, workerId: string) => {
     const res = (await client).xReadGroup(consumerGroup, workerId, {
         key: STREAM_NAME,
         id: '>'
