@@ -1,0 +1,56 @@
+import "dotenv/config"
+import { xReadGroup, xAckBulk } from "redis-stream/redis"
+import axios from "axios"
+import { prismaClient } from "prisma/client"
+
+const REGION_ID = process.env.REGION_ID as string
+const WORKER_ID = process.env.WORKER_ID as string
+
+async function main() {
+    while(1) {
+        const response = await xReadGroup(REGION_ID, WORKER_ID)
+
+        let promises = response?.map(({message}) => fetchWebsite(message.url, message.id))
+
+        await Promise.all(promises as [])
+
+
+        await xAckBulk(REGION_ID, response?.map((event) => event.id) as string[])
+    }
+}
+
+async function fetchWebsite(url: string, websiteId: string) {
+    return new Promise<void>(async (resolve, reject) => {
+        const startTime = Date.now()
+
+        await axios.get(url)
+                   .then( async () => {
+                        const endTime = Date.now()
+                        await prismaClient.websiteTick.create({
+                            data: {
+                                response_time_ms: endTime - startTime,
+                                status: "Up",
+                                region_id: REGION_ID,
+                                website_id: websiteId
+                            }
+                        })
+
+                        resolve()
+                   })
+                   .catch(async() => {
+                        const endTime = Date.now()
+                        await prismaClient.websiteTick.create({
+                            data: {
+                                response_time_ms: endTime - startTime,
+                                status: "Down",
+                                region_id: REGION_ID,
+                                website_id: websiteId
+                            }
+                        })
+
+                        resolve()
+                   })
+    })
+}
+
+main()

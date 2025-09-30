@@ -6,11 +6,11 @@ import { Router } from "express";
 const router = Router();
 router.post("/login", async (req, res) => {
     const { username, password } = req.body;
-    console.log("env ", process.env.JWT_SECRET);
     if (!username || !password) {
         res.status(401).json({
             message: "Username or Password is missing"
         });
+        return;
     }
     const user = await prismaClient.user.findFirst({
         where: {
@@ -61,7 +61,7 @@ router.post("/signup", async (req, res) => {
             username: username
         }
     });
-    if (existingUser) {
+    if (existingUser.length > 0) {
         res.status(401).json({
             message: "User already exists"
         });

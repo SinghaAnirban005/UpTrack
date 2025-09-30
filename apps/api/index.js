@@ -1,10 +1,12 @@
 import express from "express";
 import "dotenv/config";
 import authRoutes from "../api/Controllers/Auth.js";
+import websiteRoutes from "../api/Controllers/Website.js";
 export const app = express();
 app.use(express.json());
 const PORT = process.env.PORT_NO;
 app.use("/api/v1", authRoutes);
+app.use("/api/v1", websiteRoutes);
 app.listen(PORT, (err) => {
     if (err) {
         console.error("Failed to start server");

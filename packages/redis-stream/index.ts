@@ -1,6 +1,5 @@
 import { createClient } from "redis"
 
-
 const client = createClient()
                 .on("error", (err) => {
                     console.log(err)
@@ -48,7 +47,7 @@ export async function xReadGroup(consumerGroup: string, workerId: string){
         COUNT: 5
     })
     //@ts-ignore
-    let  messages: MessageType | undefined = res?.[0]?.messages;
+    let  messages: MessageType[] | undefined = res?.[0]?.messages;
 
     return messages
 }
