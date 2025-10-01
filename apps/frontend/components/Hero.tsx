@@ -1,9 +1,15 @@
+"use client"
+
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import dashboardPreview from "@/public/dashboard-preview.jpg"
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const Hero = () => {
+
+  const router = useRouter()
+
   return (
     <section className="relative pt-32 pb-20 overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-card to-background" />
@@ -31,7 +37,7 @@ const Hero = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-            <Button size="lg" className="group">
+            <Button size="lg" className="group" onClick={() => router.push("/auth")}>
               Start Free Trial
               <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </Button>

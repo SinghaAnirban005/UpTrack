@@ -1,7 +1,13 @@
+"use client"
+
 import { Button } from "@/components/ui/button";
 import { Activity } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
+
+  const router = useRouter()
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-lg">
       <div className="container mx-auto px-4">
@@ -24,10 +30,10 @@ const Navbar = () => {
           </div>
           
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" onClick={() => router.push('/auth')}>
               Sign In
             </Button>
-            <Button size="sm">
+            <Button size="sm" onClick={() => router.push('/auth')}>
               Get Started
             </Button>
           </div>

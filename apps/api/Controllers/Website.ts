@@ -1,9 +1,10 @@
 import { Router } from "express";
 import { prismaClient } from "prisma/client";
+import { userMiddleware } from "../Middleware/user.js";
 
 const router: Router = Router()
 
-router.post("/website", async(req, res) => {
+router.post("/website", userMiddleware, async(req, res) => {
 
     const { url } = req.body;
 
@@ -49,13 +50,13 @@ router.post("/website", async(req, res) => {
     }
 })
 
-router.get("/website/:websiteId", async(req, res) => {
+router.get("/website/:websiteId", userMiddleware, async(req, res) => {
     try {
         const websiteStatus = await prismaClient.website.findFirst({
             where: {
-                id: req.params.websiteId,
+                id: req.params.websiteId as string,
                 //@ts-ignore
-                user_id: req.userId
+                user_id: req.userId as string
             },
             include: {
                 ticks: {
