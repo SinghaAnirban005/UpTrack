@@ -88,4 +88,45 @@ router.get("/website/:websiteId", userMiddleware, async(req, res) => {
     }
 })
 
+router.get('/website', userMiddleware, async(req, res) => {
+    //@ts-ignore
+    const userId = req?.userId
+    try {
+        const websites = await prismaClient.website.findMany({
+            where: {
+                user_id: userId,
+            },
+            orderBy: {
+                "time_added": "desc"
+            }
+        })
+
+        if(websites.length === 0){
+            res.status(401).json(
+                {
+                    message: "No websites availiable"
+                }
+            )
+
+            return
+        }
+
+        res.status(200).json(
+            {
+                websites: websites
+            }
+        )
+
+        return;
+    } catch (error) {
+        console.error(error)
+        res.status(500).json(
+            {
+                message: error
+            }
+        )
+        return
+    }
+})
+
 export default router
