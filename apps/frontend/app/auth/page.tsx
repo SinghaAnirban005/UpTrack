@@ -9,9 +9,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
+import axios from "axios"
+import { HTTP_URL } from "@/config/var";
 
 export default function Auth() {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -20,7 +22,7 @@ export default function Auth() {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!email || !password) {
+    if (!username || !password) {
     toast("Error", {
         description: "Please fill in all fields"
     })
@@ -35,19 +37,15 @@ export default function Auth() {
     }
 
     setLoading(true);
-    const redirectUrl = `${window.location.origin}/`;
 
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: redirectUrl,
-      },
-    });
+    const res = await axios.post(`${HTTP_URL}/signup`, {
+      username: username,
+      password: password
+    })
 
     setLoading(false);
 
-    if (error) {
+    if (res.status !== 200) {
       toast("Sign up failed", {
         description: "Sign up failed"
       })
@@ -56,14 +54,15 @@ export default function Auth() {
         description: "Account created successfully. You can now sign in." 
     })
 
-      router.push("/dashboard");
-    }
+    handleSignIn(e)
+
   };
+}
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!email || !password) {
+    if (!username || !password) {
     toast("Error", {
         description: "Please fill in all fields"
     })
@@ -72,16 +71,21 @@ export default function Auth() {
 
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const res = await axios.post(`${HTTP_URL}/login`, {
+      username: username,
+      password: password
+    })
 
     setLoading(false);
 
-    if (error) {
-        toast("SIgn in failed", {
-            description: error.message
+    const userData = res.data
+
+    const userToken = userData.message.token
+    localStorage.setItem("authToken", userToken)
+
+    if (res.status !== 200) {
+        toast("Sign in failed", {
+            description: res.statusText
         })
     } else {
         toast("Welcome Back !!", {
@@ -113,13 +117,12 @@ export default function Auth() {
             <TabsContent value="signin">
               <form onSubmit={handleSignIn} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="signin-email">Email</Label>
+                  <Label htmlFor="signin-username">Username</Label>
                   <Input
-                    id="signin-email"
-                    type="email"
-                    placeholder="you@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    id="signin-username"
+                    placeholder="anirban-123"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                     required
                   />
                 </div>
@@ -156,13 +159,12 @@ export default function Auth() {
             <TabsContent value="signup">
               <form onSubmit={handleSignUp} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="signup-email">Email</Label>
+                  <Label htmlFor="signup-username">Username</Label>
                   <Input
-                    id="signup-email"
-                    type="email"
-                    placeholder="you@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    id="signin-username"
+                    placeholder="anirban-123"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                     required
                   />
                 </div>
