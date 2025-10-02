@@ -23,30 +23,49 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Plus, ExternalLink, Loader2 } from "lucide-react";
-// import { useToast } from "@/hooks/use-toast";
+import { HTTP_URL } from "@/config/var";
 import { useRouter } from "next/navigation"
 import { formatDistanceToNow } from "date-fns";
+import axios from "axios";
+
+type User = {
+    id: string,
+    username: string,
+    password: string
+}
+
+type websiteTicks = {
+    id: string,
+    status: 'up' | 'down' | 'unknown',
+    response_time_ms: number,
+    website_id: string,
+    region_id: string,
+    createdAt: Date
+}
 
 interface Website {
   id: string;
-  name: string;
   url: string;
-  status: string;
-  last_checked: string;
-  created_at: string;
+  user_id: string;
+  time_added: string;
+  user: User,
+  ticks: websiteTicks[]
 }
+
+let authToken = localStorage.getItem('authToken')
 
 const Dashboard = () => {
   const [websites, setWebsites] = useState<Website[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [name, setName] = useState("");
   const [url, setUrl] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const [err, setErr] = useState(null)
 
   useEffect(() => {
     checkAuth();
+
     fetchWebsites();
   }, []);
 
@@ -60,19 +79,19 @@ const Dashboard = () => {
 
   const fetchWebsites = async () => {
     try {
-      const { data, error } = await supabase
-        .from("websites")
-        .select("*")
-        .order("created_at", { ascending: false });
 
-      if (error) throw error;
-      setWebsites(data || []);
+    const data = await axios.get(`${HTTP_URL}/website`, {
+        withCredentials: true,
+        headers: {
+            "Authorization": `Bearer ${authToken}`
+        }
+    })
+
+    const websites = data.data.websites
+
+      setWebsites(websites || []);
     } catch (error: any) {
-    //   toast({
-    //     variant: "destructive",
-    //     title: "Error",
-    //     description: error.message,
-    //   });
+      setErr(error)
     } finally {
       setLoading(false);
     }
@@ -83,33 +102,28 @@ const Dashboard = () => {
     setIsSubmitting(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
 
-      const { error } = await supabase.from("websites").insert({
-        user_id: user.id,
-        name,
-        url,
-        status: "active",
-      });
+      const websites = await axios.post(`${HTTP_URL}/website`, {
+        url: url
+      }, {
+        withCredentials: true,
+        headers: {
+            "Authorization": `Bearer ${authToken}`
+        }
+      })
 
-      if (error) throw error;
-
-    //   toast({
-    //     title: "Success",
-    //     description: "Website added successfully",
-    //   });
-
-      setName("");
       setUrl("");
       setIsDialogOpen(false);
       fetchWebsites();
+
     } catch (error: any) {
     //   toast({
     //     variant: "destructive",
     //     title: "Error",
     //     description: error.message,
     //   });
+      console.error(error)
+      setErr(error)
     } finally {
       setIsSubmitting(false);
     }
@@ -117,9 +131,9 @@ const Dashboard = () => {
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
-      case "active":
+      case "up":
         return "bg-emerald-500/20 text-emerald-300 border-emerald-500/30";
-      case "inactive":
+      case "down":
         return "bg-red-500/20 text-red-300 border-red-500/30";
       default:
         return "bg-muted text-muted-foreground border-border";
@@ -159,16 +173,6 @@ const Dashboard = () => {
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="name">Website Name</Label>
-                    <Input
-                      id="name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="My Awesome Site"
-                      required
-                    />
-                  </div>
                   <div className="grid gap-2">
                     <Label htmlFor="url">Website URL</Label>
                     <Input
@@ -222,18 +226,18 @@ const Dashboard = () => {
                 {websites.map((website) => (
                   <TableRow key={website.id} className="border-border hover:bg-accent/50">
                     <TableCell className="font-medium text-foreground">
-                      {website.name}
+                      {website.url}
                     </TableCell>
                     <TableCell className="text-muted-foreground">
                       {website.url}
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className={getStatusColor(website.status)}>
-                        {website.status}
+                      <Badge variant="outline" className={getStatusColor(website.ticks[0].status === undefined ? 'unknown' : website.ticks[0].status)}>
+                        {website.ticks[0].status}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      {formatDistanceToNow(new Date(website.last_checked), {
+                      {formatDistanceToNow(new Date(website.ticks[0].createdAt), {
                         addSuffix: true,
                       })}
                     </TableCell>
