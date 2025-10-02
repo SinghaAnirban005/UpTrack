@@ -1,18 +1,26 @@
 import "dotenv/config"
 import axios from "axios"
 import { prismaClient } from "prisma/client"
-import { xReadGroup, xAckBulk } from "redis-stream/client"
+import { xReadGroup, xAckBulk, xCreateGroup } from "redis-stream/client"
 
-const REGION_ID = process.env.REGION_ID as string
-const WORKER_ID = process.env.WORKER_ID as string
+// const REGION_ID = process.env.REGION_ID as string
+const REGION_ID = 'usa'
+// const WORKER_ID = process.env.WORKER_ID as string
+const WORKER_ID = 'worker-1'
 
 async function main() {
+
+    console.log('entering main')
     while(1) {
+        // Before reading from groups need to ensure that the consumer group is created
+        // await xCreateGroup(REGION_ID)
         const response = await xReadGroup(REGION_ID, WORKER_ID)
 
         if(!response){
             continue
         }
+
+        console.log('logging response ', response)
 
         let promises = response?.map(({message}) => fetchWebsite(message.url, message.id))
 

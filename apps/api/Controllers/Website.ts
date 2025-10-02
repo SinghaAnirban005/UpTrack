@@ -98,6 +98,9 @@ router.get('/website', userMiddleware, async(req, res) => {
             },
             orderBy: {
                 "time_added": "desc"
+            },
+            include: {
+                ticks: true
             }
         })
 
@@ -126,6 +129,44 @@ router.get('/website', userMiddleware, async(req, res) => {
             }
         )
         return
+    }
+})
+
+router.post("/region", async(req, res) => {
+    try {
+        const { REGION_ID } = req.body
+        
+        // is it uinque to each user ??
+        const existingRegion = await prismaClient.region.findFirst({
+            where: {
+                name: REGION_ID
+            }
+        })
+
+        if(existingRegion){
+            res.status(401).json({
+                message: "Region already exists"
+            })
+
+            return;
+        }
+
+        const region = await prismaClient.region.create({
+            data: {
+                id: REGION_ID,
+                name: REGION_ID
+            }
+        })
+
+        res.status(200).json({
+            message: region
+        })
+
+        return;
+    } catch (error) {
+        res.status(500).json({
+            message: `Failed to create region: ${error}`
+        })
     }
 })
 

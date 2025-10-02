@@ -255,6 +255,12 @@ importers:
       '@prisma/client':
         specifier: ^6.16.1
         version: 6.16.1(prisma@6.16.1(typescript@5.9.2))(typescript@5.9.2)
+      '@types/axios':
+        specifier: ^0.14.4
+        version: 0.14.4
+      axios:
+        specifier: ^1.12.2
+        version: 1.12.2
     devDependencies:
       '@types/node':
         specifier: ^22.15.3
@@ -268,6 +274,12 @@ importers:
 
   packages/redis-stream:
     dependencies:
+      '@types/axios':
+        specifier: ^0.14.4
+        version: 0.14.4
+      axios:
+        specifier: ^1.12.2
+        version: 1.12.2
       redis:
         specifier: ^5.8.2
         version: 5.8.2

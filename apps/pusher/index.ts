@@ -2,6 +2,8 @@ import { prismaClient } from "prisma/client"
 import { xAddBulk } from "redis-stream/client"
 
 async function main() {
+
+    console.log("entering main ")
     let websites = await prismaClient.website.findMany({
         select: {
             url: true,
@@ -16,6 +18,8 @@ async function main() {
                 id: website.id
             }
         )))
+
+        console.log('pushed to redis stream')
     }
     
 }
@@ -23,3 +27,5 @@ async function main() {
 setInterval(() => {
     main()
 }, 3 * 1000 * 60)
+
+main()
