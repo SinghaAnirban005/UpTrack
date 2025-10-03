@@ -64,7 +64,7 @@ const Dashboard = () => {
   useEffect(() => {
     checkAuth();
 
-    fetchWebsites();
+    fetchWebsites()
   }, []);
 
   const checkAuth = async () => {
@@ -138,11 +138,6 @@ const Dashboard = () => {
       fetchWebsites();
 
     } catch (error: any) {
-    //   toast({
-    //     variant: "destructive",
-    //     title: "Error",
-    //     description: error.message,
-    //   });
       console.error(error)
       setErr(error)
     } finally {
@@ -255,7 +250,7 @@ const Dashboard = () => {
               <TableBody>
                 {websites.map((website) => (
                   <TableRow key={website.id} className="border-border hover:bg-accent/50">
-                    <TableCell className="font-medium text-foreground">
+                    <TableCell className="font-medium text-foreground cursor-pointer" onClick={() => router.push(`/website/${website.id}`)}>
                       {website.url}
                     </TableCell>
                     <TableCell className="text-muted-foreground">

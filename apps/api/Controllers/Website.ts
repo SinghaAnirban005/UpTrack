@@ -63,7 +63,7 @@ router.get("/website/:websiteId", userMiddleware, async(req, res) => {
                     orderBy: {
                         createdAt: "desc"
                     },
-                    take: 1
+                    take: 5
                 }
             }
         })
@@ -78,9 +78,11 @@ router.get("/website/:websiteId", userMiddleware, async(req, res) => {
 
         res.status(200).json({
             data: {
-                status: websiteStatus.ticks
+                status: websiteStatus.ticks,
+                data: websiteStatus
             }
         })
+        return
     } catch (error) {
         res.status(500).json({
             message: `Server failed ${error}`
