@@ -14,7 +14,6 @@ export const userMiddleware = async(req: Request, res: Response, next: NextFunct
             return;
         }
 
-
         const verifyToken = await  jwt.verify(token, process.env.JWT_SECRET as string)
 
         if(!verifyToken){

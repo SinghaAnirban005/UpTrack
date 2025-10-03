@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken"
 import { prismaClient } from "prisma/client"
 import "dotenv/config"
 import { Router } from "express";
+import { userMiddleware } from "../Middleware/user.js";
 
 const router:Router  = Router()
  
@@ -110,6 +111,17 @@ router.post("/signup", async(req: Request, res: Response) => {
         message: {
             username: username
         }
+    })
+
+    return
+})
+
+router.post("/logout", userMiddleware, async(req: Request, res: Response) => {
+    //@ts-ignore
+    req.userId = null;
+
+    res.status(200).json({
+        message: "Logged out"
     })
 
     return

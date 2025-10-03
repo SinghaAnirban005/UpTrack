@@ -75,6 +75,25 @@ const Dashboard = () => {
     }
   };
 
+  const handleLogout = async() => {
+
+    const authToken = localStorage.getItem("authToken")
+
+    const res = await axios.post(`${HTTP_URL}/logout`, {}, {
+      withCredentials: true,
+      headers: {
+        'Authorization': `Bearer ${authToken}`
+      }
+    })
+
+    if(res.status !== 200){
+      return;
+    }
+
+    localStorage.removeItem("authToken")
+    router.push("/auth")
+  }
+
   const fetchWebsites = async () => {
     try {
 
@@ -154,55 +173,64 @@ const Dashboard = () => {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-4xl font-bold text-foreground mb-2">Dashboard</h1>
-            <p className="text-muted-foreground">Manage and monitor your websites</p>
-          </div>
+  <div>
+    <h1 className="text-4xl font-bold text-foreground mb-2">Dashboard</h1>
+    <p className="text-muted-foreground">Manage and monitor your websites</p>
+  </div>
 
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Add Website
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <form onSubmit={handleAddWebsite}>
-                <DialogHeader>
-                  <DialogTitle>Add New Website</DialogTitle>
-                  <DialogDescription>
-                    Enter the details of the website you want to monitor
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="url">Website URL</Label>
-                    <Input
-                      id="url"
-                      type="url"
-                      value={url}
-                      onChange={(e) => setUrl(e.target.value)}
-                      placeholder="https://example.com"
-                      required
-                    />
-                  </div>
-                </div>
-                <DialogFooter>
-                  <Button type="submit" disabled={isSubmitting}>
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Adding...
-                      </>
-                    ) : (
-                      "Add Website"
-                    )}
-                  </Button>
-                </DialogFooter>
-              </form>
-            </DialogContent>
-          </Dialog>
-        </div>
+  <div className="flex items-center gap-2">
+    <Button 
+      variant="outline" 
+      onClick={handleLogout}
+    >
+      Logout
+    </Button>
+    
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <DialogTrigger asChild>
+        <Button>
+          <Plus className="mr-2 h-4 w-4" />
+          Add Website
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <form onSubmit={handleAddWebsite}>
+          <DialogHeader>
+            <DialogTitle>Add New Website</DialogTitle>
+            <DialogDescription>
+              Enter the details of the website you want to monitor
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="url">Website URL</Label>
+              <Input
+                id="url"
+                type="url"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder="https://example.com"
+                required
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Adding...
+                </>
+              ) : (
+                "Add Website"
+              )}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  </div>
+</div>
 
         {websites.length === 0 ? (
           <div className="border border-border rounded-lg p-12 text-center">
