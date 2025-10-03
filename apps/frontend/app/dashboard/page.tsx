@@ -52,8 +52,6 @@ interface Website {
   ticks: websiteTicks[]
 }
 
-let authToken = localStorage.getItem('authToken')
-
 const Dashboard = () => {
   const [websites, setWebsites] = useState<Website[]>([]);
   const [loading, setLoading] = useState(true);
@@ -80,6 +78,8 @@ const Dashboard = () => {
   const fetchWebsites = async () => {
     try {
 
+      const authToken = localStorage.getItem('authToken')
+
     const data = await axios.get(`${HTTP_URL}/website`, {
         withCredentials: true,
         headers: {
@@ -100,6 +100,8 @@ const Dashboard = () => {
   const handleAddWebsite = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    const authToken = localStorage.getItem('authToken')
 
     try {
 
@@ -232,14 +234,16 @@ const Dashboard = () => {
                       {website.url}
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className={getStatusColor(website.ticks[0].status === undefined ? 'unknown' : website.ticks[0].status)}>
-                        {website.ticks[0].status}
+                      <Badge variant="outline" className={getStatusColor(website?.ticks[0]?.status === undefined ? 'unknown' : website.ticks[0].status)}>
+                        {website?.ticks[0]?.status || "-"}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      {formatDistanceToNow(new Date(website.ticks[0].createdAt), {
+                     {
+                       website?.ticks[0]?.createdAt === undefined ? "-" : formatDistanceToNow(new Date(website?.ticks[0]?.createdAt), {
                         addSuffix: true,
-                      })}
+                      })
+                     }
                     </TableCell>
                     <TableCell>
                       <a
