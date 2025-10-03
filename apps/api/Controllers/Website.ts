@@ -132,42 +132,46 @@ router.get('/website', userMiddleware, async(req, res) => {
     }
 })
 
-router.post("/region", async(req, res) => {
-    try {
-        const { REGION_ID } = req.body
-        
-        // is it uinque to each user ??
-        const existingRegion = await prismaClient.region.findFirst({
-            where: {
-                name: REGION_ID
-            }
-        })
+router.post("/region", async (req, res) => {
+  try {
+    const { REGION_ID } = req.body;
 
-        if(existingRegion){
-            res.status(401).json({
-                message: "Region already exists"
-            })
-
-            return;
-        }
-
-        const region = await prismaClient.region.create({
-            data: {
-                id: REGION_ID,
-                name: REGION_ID
-            }
-        })
-
-        res.status(200).json({
-            message: region
-        })
-
-        return;
-    } catch (error) {
-        res.status(500).json({
-            message: `Failed to create region: ${error}`
-        })
+    if (!REGION_ID) {
+      return res.status(400).json({
+        message: "REGION_ID is required",
+      });
     }
-})
+
+    const existingRegion = await prismaClient.region.findUnique({
+      where: { id: REGION_ID },
+    });
+
+    if (existingRegion) {
+      return res.status(409).json({
+        message: "Region already exists",
+        region: existingRegion,
+      });
+    }
+
+    const region = await prismaClient.region.create({
+      data: {
+        id: REGION_ID,
+        name: REGION_ID,
+      },
+    });
+
+    return res.status(201).json({
+      message: "Region created successfully",
+      region,
+    });
+  } catch (error) {
+    console.error("Error creating region:", error);
+    return res.status(500).json({
+      message: "Failed to create region",
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
+});
+
 
 export default router

@@ -11,9 +11,10 @@ const WORKER_ID = 'worker-1'
 async function main() {
 
     console.log('entering main')
+    // Before reading from groups need to ensure that the consumer group is created
+    await xCreateGroup(REGION_ID)
+    
     while(1) {
-        // Before reading from groups need to ensure that the consumer group is created
-        // await xCreateGroup(REGION_ID)
         const response = await xReadGroup(REGION_ID, WORKER_ID)
 
         if(!response){

@@ -65,13 +65,19 @@ export const xAckBulk = async(consumerGroup: string, eventIds: string[]) => {
 }
 
 export const xCreateGroup = async (consumerGroup: string) => {
-    const res = await axios.post(`http://localhost:8000/api/v1/region`, {
-        REGION_ID: consumerGroup
-    })
+    try {
+        const res = await axios.post(`http://localhost:8000/api/v1/region`, {
+            REGION_ID: consumerGroup
+        })
 
-    if (res.status !== 200) return
-
-    await client.xGroupCreate(STREAM_NAME, consumerGroup, "$", { MKSTREAM: true })
-
-    console.log('Successfully created Group')
+        if(res.status === 200){
+            await client.xGroupCreate(STREAM_NAME, consumerGroup, "$", { MKSTREAM: true })
+        }
+    } catch (err: any) {
+        if (err.message.includes("BUSYGROUP")) {
+            console.log(`Consumer group ${consumerGroup} already exists, skipping creation.`)
+        } else {
+            throw err
+        }
+    }
 }
