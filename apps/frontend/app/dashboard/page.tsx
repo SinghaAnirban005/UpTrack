@@ -234,13 +234,13 @@ const Dashboard = () => {
                       {website.url}
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className={getStatusColor(website?.ticks[0]?.status === undefined ? 'unknown' : website.ticks[0].status)}>
-                        {website?.ticks[0]?.status || "-"}
+                      <Badge variant="outline" className={getStatusColor(website?.ticks[0]?.status === undefined ? 'unknown' : website.ticks[website.ticks.length - 1].status)}>
+                        {website?.ticks[website.ticks.length - 1]?.status || "-"}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
                      {
-                       website?.ticks[0]?.createdAt === undefined ? "-" : formatDistanceToNow(new Date(website?.ticks[0]?.createdAt), {
+                       website?.ticks[0]?.createdAt === undefined ? "-" : formatDistanceToNow(new Date(website?.ticks[website.ticks.length - 1]?.createdAt), {
                         addSuffix: true,
                       })
                      }
