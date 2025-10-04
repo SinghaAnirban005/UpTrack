@@ -147,7 +147,7 @@ router.post("/region", async (req, res) => {
     const existingRegion = await prismaClient.region.findUnique({
       where: { id: REGION_ID },
     });
-
+    
     if (existingRegion) {
       return res.status(409).json({
         message: "Region already exists",
