@@ -10,6 +10,7 @@
     "build:backend": "cd apps/api && tcs -b",
     "start:backend": "cd apps/api && node dist/index.js",
     "start:pub": "cd apps/pusher && node dist/index.js",
+    "start:worker": "cd apps/worker && node dist/index.js",
     "turbo": "^2.5.6",
     "typescript": "5.9.2",
     "postinstall": "prisma generate --schema=./packages/prisma/prisma/schema.prisma"
