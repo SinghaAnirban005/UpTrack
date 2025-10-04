@@ -9,7 +9,7 @@ export const app: Express = express()
 
 app.use(express.json())
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: ['http://localhost:3000', 'https://uptrack-gwf8.onrender.com'],
     credentials: true
 }))
 
