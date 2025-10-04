@@ -1,3 +1,14 @@
+![Screenshot from 2025-10-05 01-35-37](https://github.com/user-attachments/assets/1727bd67-2153-4f60-97a5-649f594b2bd4)
+
+### UpTrack is an open source, full stack uptime monitoring and incident management platform designed for modern development teams.
+### Stop guessing when your services fail ! start tracking and resolving issues with precision.
+
+
+# Architecture
+![uptrack](https://github.com/user-attachments/assets/d0f122dc-7036-44a1-94f3-fdf85ede8981)
+
+---
+
 # Turborepo starter
 
 This Turborepo starter is maintained by the Turborepo core team.
