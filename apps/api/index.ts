@@ -1,8 +1,8 @@
 import { Express } from "express"
 import express from "express"
 import "dotenv/config"
-import authRoutes from "../api/Controllers/Auth.js"
-import websiteRoutes from "../api/Controllers/Website.js"
+import authRoutes from "./Controllers/Auth.js"
+import websiteRoutes from "./Controllers/Website.js"
 import cors from "cors"
 
 export const app: Express = express()
