@@ -77,12 +77,12 @@ async function xAck(consumerGroup: string, eventId: string){
 }
 
 export const xAckBulk = async(consumerGroup: string, eventIds: string[]) => {
-    await eventIds.map(event => xAck(consumerGroup, event))
+    await Promise.all(eventIds.map(event => xAck(consumerGroup, event)))
 }
 
 export const xCreateGroup = async (consumerGroup: string) => {
   try {
-    const res = await axios.post(`http://localhost:8000/api/v1/region`, {
+    const res = await axios.post(`https://uptrack-backend-28fp.onrender.com/api/v1/region`, {
       REGION_ID: consumerGroup,
     });
 
