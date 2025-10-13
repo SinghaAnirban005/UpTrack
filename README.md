@@ -10,6 +10,14 @@
 
 ---
 
+## Dashboard
+
+<img width="1584" height="455" alt="Screenshot from 2025-10-13 14-34-19" src="https://github.com/user-attachments/assets/f546e7e5-21cc-4c8e-94e2-aebcd8a3848b" />
+
+## Website Status
+
+<img width="1584" height="686" alt="Screenshot from 2025-10-13 14-34-35" src="https://github.com/user-attachments/assets/bbf012b4-cb6b-4ddb-a0c2-0c3a8234e5c0" />
+
 # Turborepo starter
 
 This Turborepo starter is maintained by the Turborepo core team.
