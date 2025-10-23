@@ -5,7 +5,8 @@ import { NextFunction, Request, Response } from "express"
 export const userMiddleware = async(req: Request, res: Response, next: NextFunction) => {
     try {
 
-        const token = req.headers["authorization"]?.split("Bearer ")[1];
+        const authHeader = req.headers["authorization"];
+        const token = authHeader?.startsWith("Bearer ") ? authHeader.split(" ")[1] : authHeader;
 
         if(!token){
             res.status(400).json({
