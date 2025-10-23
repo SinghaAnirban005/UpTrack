@@ -34,8 +34,6 @@ export const userMiddleware = async(req: Request, res: Response, next: NextFunct
         //@ts-ignore
         req.userId = user.id
 
-        console.log("user id",  user || "")
-
         next()
     } catch (error) {
         res.status(500).json({
