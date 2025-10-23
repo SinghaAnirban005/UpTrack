@@ -43,6 +43,8 @@ export default function Auth() {
       password: password,
     });
 
+    setUsername(username)
+    setPassword(password)
     setLoading(false);
 
     if (res.status !== 200) {
