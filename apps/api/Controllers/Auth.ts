@@ -44,7 +44,8 @@ router.post("/login", async(req: Request, res: Response) => {
     }
 
     const genToken = await jwt.sign({
-        username: username
+        username: username,
+        id: user.id
     }, process.env.JWT_SECRET as string)
 
     if(!genToken){
