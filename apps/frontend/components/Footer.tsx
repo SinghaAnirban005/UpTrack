@@ -1,6 +1,10 @@
 import { Activity, Github, Twitter, Linkedin } from 'lucide-react';
 
 const Footer = () => {
+
+  const date = new Date()
+  const currYear = date.getFullYear()
+
   return (
     <footer className="border-border/50 border-t py-12">
       <div className="container mx-auto px-4">
@@ -95,7 +99,7 @@ const Footer = () => {
         </div>
 
         <div className="border-border/50 flex flex-col items-center justify-between gap-4 border-t pt-8 md:flex-row">
-          <p className="text-muted-foreground text-sm">© 2024 UpTrack. All rights reserved.</p>
+          <p className="text-muted-foreground text-sm">`© ${currYear} UpTrack. All rights reserved.`</p>
 
           <div className="flex items-center gap-4">
             <a href="https://x.com/Aan00789423" className="text-muted-foreground hover:text-foreground transition-colors">
