@@ -3,6 +3,7 @@ import express from "express"
 import "dotenv/config"
 import authRoutes from "./Controllers/Auth.js"
 import websiteRoutes from "./Controllers/Website.js"
+import healthRouter from "./Controllers/Health.js"
 import cors from "cors"
 
 export const app: Express = express()
@@ -17,6 +18,7 @@ const PORT = process.env.PORT_NO
 
 app.use("/api/v1", authRoutes)
 app.use("/api/v1", websiteRoutes)
+app.use("/api/v1", healthRouter)
 
 app.listen(PORT, (err) => {
     if(err){
