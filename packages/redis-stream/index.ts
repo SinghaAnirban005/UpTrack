@@ -2,7 +2,7 @@ import { createClient } from "redis";
 import axios from "axios";
 
 const client = createClient({
-  url: "rediss://default:gQAAAAAAAX9DAAIncDI1YjU0MTc0MGNlN2I0ZjA5YTI5MWUyNWE0YjhmYjI3M3AyOTgxMTU@leading-osprey-98115.upstash.io:6379",
+  url: process.env.REDIS_URL as string,
 }).on("error", (err) => {
   console.log(err);
 });
