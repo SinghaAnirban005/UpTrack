@@ -7,7 +7,7 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
-    "build:backend": "cd apps/api && tcs -b",
+    "build:backend": "cd apps/api && tsc -b",
     "start:backend": "cd apps/api && node dist/index.js",
     "start:pub": "cd apps/pusher && node dist/index.js",
     "start:worker": "cd apps/worker && node dist/index.js",

@@ -26,6 +26,7 @@ import { Plus, ExternalLink, Loader2 } from 'lucide-react';
 import { HTTP_URL } from '@/config/var';
 import { useRouter } from 'next/navigation';
 import { formatDistanceToNow } from 'date-fns';
+import { URL_REGEX } from '@/lib/regex';
 import axios from 'axios';
 
 type User = {
@@ -120,15 +121,27 @@ const Dashboard = () => {
 
   const handleAddWebsite = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
 
+    const cleanedUrl = url.trim();
+
+    if (!cleanedUrl) {
+      alert('Please enter a URL.');
+      return;
+    }
+
+    if (!URL_REGEX.test(cleanedUrl)) {
+      alert('Please enter a valid website URL (e.g., https://example.com).');
+      return;
+    }
+
+    setIsSubmitting(true);
     const authToken = localStorage.getItem('authToken');
 
     try {
-      const websites = await axios.post(
+      await axios.post(
         `${HTTP_URL}/website`,
         {
-          url: url,
+          url: cleanedUrl,
         },
         {
           withCredentials: true,
@@ -202,12 +215,17 @@ const Dashboard = () => {
                       <Label htmlFor="url">Website URL</Label>
                       <Input
                         id="url"
-                        type="url"
+                        type="text"
                         value={url}
                         onChange={(e) => setUrl(e.target.value)}
+                        onBlur={() => setUrl(url.trim())}
                         placeholder="https://example.com"
                         required
+                        className={url.length > 0 && !URL_REGEX.test(url) ? 'border-red-500' : ''}
                       />
+                      {url.length > 0 && !URL_REGEX.test(url) && (
+                        <p className="mt-1 text-xs text-red-500">Invalid URL format</p>
+                      )}
                     </div>
                   </div>
                   <DialogFooter>

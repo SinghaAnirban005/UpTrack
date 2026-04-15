@@ -1,61 +1,60 @@
-import { createClient } from "redis"
-import axios from "axios"
+import { createClient } from "redis";
+import axios from "axios";
 
 const client = createClient({
-  url: process.env.REDIS_URL as string
-})
-                .on("error", (err) => {
-                    console.log(err)
-                })
+  url: "rediss://default:gQAAAAAAAX9DAAIncDI1YjU0MTc0MGNlN2I0ZjA5YTI5MWUyNWE0YjhmYjI3M3AyOTgxMTU@leading-osprey-98115.upstash.io:6379",
+}).on("error", (err) => {
+  console.log(err);
+});
 
-client.connect()
+client.connect();
 
 type WebsiteEvent = {
-        url: string
-        id: string,
-}
+  url: string;
+  id: string;
+};
 
 type MessageType = {
-    id: string,
-    message: {
-        id: string,
-        url: string
-    }
+  id: string;
+  message: {
+    id: string;
+    url: string;
+  };
+};
+
+const STREAM_NAME = "UpTrack:website";
+
+async function xAdd({ url, id }: WebsiteEvent) {
+  (await client).xAdd(STREAM_NAME, "*", {
+    url,
+    id,
+  });
 }
 
-const STREAM_NAME = "UpTrack:website"
-
-async function xAdd({url, id}: WebsiteEvent){
-    (await client).xAdd(
-        STREAM_NAME, '*', {
-            url,
-            id
-        }
-    )
-}
-
-export const xAddBulk = async(websites: WebsiteEvent[]) => {
-    for(let i = 0; i < websites.length; i++){
-        await xAdd({
-            url: websites[i]?.url as string,
-            id: websites[i]?.id as string
-        })
-    }
-}
+export const xAddBulk = async (websites: WebsiteEvent[]) => {
+  for (let i = 0; i < websites.length; i++) {
+    await xAdd({
+      url: websites[i]?.url as string,
+      id: websites[i]?.id as string,
+    });
+  }
+};
 
 export const xReadGroup = async (consumerGroup: string, workerId: string) => {
   try {
-    const res = await (await client).xReadGroup(
+    const res = await (
+      await client
+    ).xReadGroup(
       consumerGroup,
       workerId,
       {
         key: STREAM_NAME,
-        id: '>'
+        id: ">",
       },
       {
         COUNT: 5,
-        BLOCK: 5000
-      }
+        BLOCK: 5000,
+      },
     );
 
     //@ts-ignore
@@ -63,32 +62,40 @@ export const xReadGroup = async (consumerGroup: string, workerId: string) => {
     return messages;
   } catch (err: any) {
     if (err.message.includes("NOGROUP")) {
-      console.warn(`Consumer group ${consumerGroup} not found on stream. Creating it now...`);
-      await client.xGroupCreate(STREAM_NAME, consumerGroup, "$", { MKSTREAM: true });
+      console.warn(
+        `Consumer group ${consumerGroup} not found on stream. Creating it now...`,
+      );
+      await client.xGroupCreate(STREAM_NAME, consumerGroup, "$", {
+        MKSTREAM: true,
+      });
       return [];
     }
     throw err;
   }
 };
 
-
-async function xAck(consumerGroup: string, eventId: string){
-    (await client).xAck(STREAM_NAME, consumerGroup, eventId)
+async function xAck(consumerGroup: string, eventId: string) {
+  (await client).xAck(STREAM_NAME, consumerGroup, eventId);
 }
 
-export const xAckBulk = async(consumerGroup: string, eventIds: string[]) => {
-    await Promise.all(eventIds.map(event => xAck(consumerGroup, event)))
-}
+export const xAckBulk = async (consumerGroup: string, eventIds: string[]) => {
+  await Promise.all(eventIds.map((event) => xAck(consumerGroup, event)));
+};
 
 export const xCreateGroup = async (consumerGroup: string) => {
   try {
-    const res = await axios.post(`https://uptrack-backend-28fp.onrender.com/api/v1/region`, {
-      REGION_ID: consumerGroup,
-    });
+    const res = await axios.post(
+      `https://uptrack-backend-28fp.onrender.com/api/v1/region`,
+      {
+        REGION_ID: consumerGroup,
+      },
+    );
 
     if (res.status === 201 || res.status === 200) {
       console.log(`Region ${consumerGroup} created successfully.`);
-      await client.xGroupCreate(STREAM_NAME, consumerGroup, "$", { MKSTREAM: true });
+      await client.xGroupCreate(STREAM_NAME, consumerGroup, "$", {
+        MKSTREAM: true,
+      });
     }
   } catch (err: any) {
     if (err.response?.status === 409) {
@@ -96,7 +103,9 @@ export const xCreateGroup = async (consumerGroup: string) => {
       console.log(`Region ${consumerGroup} already exists, skipping creation.`);
     } else if (err.message?.includes("BUSYGROUP")) {
       // Redis consumer group already exists — safe to ignore
-      console.log(`Consumer group ${consumerGroup} already exists in Redis, skipping creation.`);
+      console.log(
+        `Consumer group ${consumerGroup} already exists in Redis, skipping creation.`,
+      );
     } else {
       console.error("Error creating consumer group:", err.message || err);
       throw err;

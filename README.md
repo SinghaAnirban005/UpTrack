@@ -4,8 +4,8 @@
 
 ### Stop guessing when your services fail ! start tracking and resolving issues with precision.
 
-
 # Architecture
+
 ![uptrack](https://github.com/user-attachments/assets/d0f122dc-7036-44a1-94f3-fdf85ede8981)
 
 ---
