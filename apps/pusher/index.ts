@@ -1,31 +1,32 @@
-import { prismaClient } from "prisma/client"
-import { xAddBulk } from "redis-stream/client"
+import { prismaClient } from "prisma/client";
+import { xAddBulk } from "redis-stream/client";
 
 async function main() {
+  console.log("entering main ");
+  let websites = await prismaClient.website.findMany({
+    select: {
+      url: true,
+      id: true,
+    },
+  });
 
-    console.log("entering main ")
-    let websites = await prismaClient.website.findMany({
-        select: {
-            url: true,
-            id: true
-        }
-    })
+  if (websites.length > 0) {
+    await xAddBulk(
+      websites.map((website) => ({
+        url: website.url,
+        id: website.id,
+      })),
+    );
 
-    if(websites.length > 0){
-        await xAddBulk(websites.map(website => (
-            {
-                url: website.url,
-                id: website.id
-            }
-        )))
-
-        console.log('pushed to redis stream')
-    }
-    
+    console.log("pushed to redis stream");
+  }
 }
 
-setInterval(() => {
-    main()
-}, 30 * 1000 * 60)
+setInterval(
+  () => {
+    main();
+  },
+  5 * 1000 * 60,
+);
 
-main()
+main();
