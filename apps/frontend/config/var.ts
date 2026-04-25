@@ -1,1 +1,1 @@
-export const HTTP_URL = 'https://uptrack-backend-28fp.onrender.com/api/v1';
+export const HTTP_URL = 'https://uptrack-backend-qor0.onrender.com/api/v1';
