@@ -39,7 +39,7 @@ type User = {
 
 type websiteTicks = {
   id: string;
-  status: 'up' | 'down' | 'unknown';
+  status: 'Up' | 'Down' | 'Unknown';
   response_time_ms: number;
   website_id: string;
   region_id: string;
@@ -175,8 +175,8 @@ const Dashboard = () => {
     }
   };
 
-  const upCount = websites.filter((w) => w.ticks[w.ticks.length - 1]?.status === 'up').length;
-  const downCount = websites.filter((w) => w.ticks[w.ticks.length - 1]?.status === 'down').length;
+  const upCount = websites.filter((w) => w.ticks[w.ticks.length - 1]?.status === 'Up').length;
+  const downCount = websites.filter((w) => w.ticks[w.ticks.length - 1]?.status === 'Down').length;
 
   if (loading) {
     return (

@@ -58,8 +58,6 @@ const WebsiteDetail = () => {
         },
       });
 
-      console.log(websiteData);
-
       setWebsite(websiteData.data.data.data || []);
       setStatusChecks(websiteData.data.data.status || []);
     } catch (error: any) {
