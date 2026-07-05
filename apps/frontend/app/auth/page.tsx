@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
-import { Eye, EyeOff } from 'lucide-react';
+import { Activity, Eye, EyeOff } from 'lucide-react';
 import axios from 'axios';
 import { HTTP_URL } from '@/config/var';
 
@@ -98,12 +98,16 @@ export default function Auth() {
   };
 
   return (
-    <div className="from-card to-background flex min-h-screen items-center justify-center bg-gradient-to-b p-4">
-      <Card className="border-primary/30 shadow-glow w-full max-w-md">
+    <div className="bg-grid-pattern relative flex min-h-screen items-center justify-center overflow-hidden bg-zinc-950 p-4">
+      <div className="pointer-events-none absolute -top-32 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-violet-600/20 blur-[120px]" />
+      <div className="pointer-events-none absolute -bottom-32 right-1/4 h-72 w-72 rounded-full bg-emerald-500/10 blur-[120px]" />
+
+      <Card className="relative w-full max-w-md border-zinc-800/60 bg-zinc-900/60 shadow-2xl shadow-black/40">
         <CardHeader className="text-center">
-          <CardTitle className="from-primary to-accent bg-gradient-to-r bg-clip-text text-3xl font-bold text-transparent">
-            UpTrack
-          </CardTitle>
+          <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400">
+            <Activity className="h-5 w-5" />
+          </div>
+          <CardTitle className="text-2xl font-semibold text-zinc-50">UpTrack</CardTitle>
           <CardDescription>Monitor your services with confidence</CardDescription>
         </CardHeader>
         <CardContent>
@@ -139,7 +143,7 @@ export default function Auth() {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2"
+                      className="absolute top-1/2 right-3 -translate-y-1/2 text-zinc-500 transition-colors hover:text-zinc-200"
                     >
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
@@ -178,12 +182,12 @@ export default function Auth() {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2"
+                      className="absolute top-1/2 right-3 -translate-y-1/2 text-zinc-500 transition-colors hover:text-zinc-200"
                     >
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   </div>
-                  <p className="text-muted-foreground text-xs">Must be at least 6 characters</p>
+                  <p className="text-xs text-zinc-500">Must be at least 6 characters</p>
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? 'Creating account...' : 'Create Account'}

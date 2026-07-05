@@ -22,7 +22,9 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Plus, ExternalLink, Loader2 } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { DashboardShell } from '@/components/dashboard-shell';
+import { Plus, ExternalLink, Loader2, Globe, CheckCircle2, XCircle } from 'lucide-react';
 import { HTTP_URL } from '@/config/var';
 import { useRouter } from 'next/navigation';
 import { formatDistanceToNow } from 'date-fns';
@@ -165,117 +167,170 @@ const Dashboard = () => {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case 'up':
-        return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
+        return 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30';
       case 'down':
-        return 'bg-red-500/20 text-red-300 border-red-500/30';
+        return 'bg-red-500/15 text-red-300 border-red-500/30';
       default:
-        return 'bg-muted text-muted-foreground border-border';
+        return 'bg-zinc-800 text-zinc-400 border-zinc-700';
     }
   };
 
+  const upCount = websites.filter((w) => w.ticks[w.ticks.length - 1]?.status === 'up').length;
+  const downCount = websites.filter((w) => w.ticks[w.ticks.length - 1]?.status === 'down').length;
+
   if (loading) {
     return (
-      <div className="bg-background flex min-h-screen items-center justify-center">
-        <Loader2 className="text-primary h-8 w-8 animate-spin" />
+      <div className="flex min-h-screen items-center justify-center bg-zinc-950">
+        <Loader2 className="h-8 w-8 animate-spin text-zinc-500" />
       </div>
     );
   }
 
   return (
-    <div className="bg-background min-h-screen">
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8 flex items-center justify-between">
+    <DashboardShell onLogout={handleLogout}>
+      <div className="mx-auto max-w-6xl px-6 py-10 md:px-10">
+        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-foreground mb-2 text-4xl font-bold">Dashboard</h1>
-            <p className="text-muted-foreground">Manage and monitor your websites</p>
+            <h1 className="text-2xl font-semibold tracking-tight text-zinc-50">Monitors</h1>
+            <p className="mt-1 text-sm text-zinc-400">
+              Manage and monitor the uptime of your websites
+            </p>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={handleLogout}>
-              Logout
-            </Button>
-
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Website
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
-                <form onSubmit={handleAddWebsite}>
-                  <DialogHeader>
-                    <DialogTitle>Add New Website</DialogTitle>
-                    <DialogDescription>
-                      Enter the details of the website you want to monitor
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4">
-                    <div className="grid gap-2">
-                      <Label htmlFor="url">Website URL</Label>
-                      <Input
-                        id="url"
-                        type="text"
-                        value={url}
-                        onChange={(e) => setUrl(e.target.value)}
-                        onBlur={() => setUrl(url.trim())}
-                        placeholder="https://example.com"
-                        required
-                        className={url.length > 0 && !URL_REGEX.test(url) ? 'border-red-500' : ''}
-                      />
-                      {url.length > 0 && !URL_REGEX.test(url) && (
-                        <p className="mt-1 text-xs text-red-500">Invalid URL format</p>
-                      )}
-                    </div>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="h-4 w-4" />
+                Add Website
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <form onSubmit={handleAddWebsite}>
+                <DialogHeader>
+                  <DialogTitle>Add New Website</DialogTitle>
+                  <DialogDescription>
+                    Enter the details of the website you want to monitor
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="url">Website URL</Label>
+                    <Input
+                      id="url"
+                      type="text"
+                      value={url}
+                      onChange={(e) => setUrl(e.target.value)}
+                      onBlur={() => setUrl(url.trim())}
+                      placeholder="https://example.com"
+                      required
+                      className={url.length > 0 && !URL_REGEX.test(url) ? 'border-red-500' : ''}
+                    />
+                    {url.length > 0 && !URL_REGEX.test(url) && (
+                      <p className="mt-1 text-xs text-red-400">Invalid URL format</p>
+                    )}
                   </div>
-                  <DialogFooter>
-                    <Button type="submit" disabled={isSubmitting}>
-                      {isSubmitting ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Adding...
-                        </>
-                      ) : (
-                        'Add Website'
-                      )}
-                    </Button>
-                  </DialogFooter>
-                </form>
-              </DialogContent>
-            </Dialog>
-          </div>
+                </div>
+                <DialogFooter>
+                  <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Adding...
+                      </>
+                    ) : (
+                      'Add Website'
+                    )}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <Card className="gap-2 py-5">
+            <CardContent className="flex items-center justify-between px-5">
+              <div>
+                <p className="text-xs font-medium tracking-wide text-zinc-500 uppercase">
+                  Total monitors
+                </p>
+                <p className="mt-1 text-2xl font-semibold text-zinc-50">{websites.length}</p>
+              </div>
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-zinc-800/60 text-zinc-300">
+                <Globe className="h-5 w-5" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="gap-2 py-5">
+            <CardContent className="flex items-center justify-between px-5">
+              <div>
+                <p className="text-xs font-medium tracking-wide text-zinc-500 uppercase">
+                  Currently up
+                </p>
+                <p className="mt-1 text-2xl font-semibold text-zinc-50">{upCount}</p>
+              </div>
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-400">
+                <CheckCircle2 className="h-5 w-5" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="gap-2 py-5">
+            <CardContent className="flex items-center justify-between px-5">
+              <div>
+                <p className="text-xs font-medium tracking-wide text-zinc-500 uppercase">
+                  Currently down
+                </p>
+                <p className="mt-1 text-2xl font-semibold text-zinc-50">{downCount}</p>
+              </div>
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-500/15 text-red-400">
+                <XCircle className="h-5 w-5" />
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {websites.length === 0 ? (
-          <div className="border-border rounded-lg border p-12 text-center">
-            <p className="text-muted-foreground mb-4">No websites added yet</p>
-            <Button onClick={() => setIsDialogOpen(true)}>
-              <Plus className="mr-2 h-4 w-4" />
-              Add Your First Website
-            </Button>
-          </div>
+          <Card className="items-center border-dashed py-16 text-center">
+            <CardContent className="flex flex-col items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-800/60 text-zinc-400">
+                <Globe className="h-6 w-6" />
+              </div>
+              <div>
+                <p className="font-medium text-zinc-200">No websites added yet</p>
+                <p className="mt-1 text-sm text-zinc-500">
+                  Add your first website to start monitoring uptime.
+                </p>
+              </div>
+              <Button onClick={() => setIsDialogOpen(true)}>
+                <Plus className="h-4 w-4" />
+                Add Your First Website
+              </Button>
+            </CardContent>
+          </Card>
         ) : (
-          <div className="border-border overflow-hidden rounded-lg border">
+          <Card className="overflow-hidden py-0">
             <Table>
               <TableHeader>
-                <TableRow className="border-border hover:bg-accent/50">
-                  <TableHead className="text-foreground">Name</TableHead>
-                  <TableHead className="text-foreground">URL</TableHead>
-                  <TableHead className="text-foreground">Status</TableHead>
-                  <TableHead className="text-foreground">Last Checked</TableHead>
-                  <TableHead className="text-foreground">Actions</TableHead>
+                <TableRow className="hover:bg-transparent">
+                  <TableHead>Name</TableHead>
+                  <TableHead>URL</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Last Checked</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {websites.map((website) => (
-                  <TableRow key={website.id} className="border-border hover:bg-accent/50">
+                  <TableRow key={website.id}>
                     <TableCell
-                      className="text-foreground cursor-pointer font-medium"
+                      className="cursor-pointer font-medium text-zinc-100"
                       onClick={() => router.push(`/website/${website.id}`)}
                     >
                       {website.url}
                     </TableCell>
-                    <TableCell className="text-muted-foreground">{website.url}</TableCell>
+                    <TableCell className="text-zinc-400">{website.url}</TableCell>
                     <TableCell>
                       <Badge
                         variant="outline"
@@ -288,7 +343,7 @@ const Dashboard = () => {
                         {website?.ticks[website.ticks.length - 1]?.status || 'Checking'}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell className="text-zinc-400">
                       {website?.ticks[0]?.createdAt === undefined
                         ? '-'
                         : formatDistanceToNow(
@@ -298,12 +353,12 @@ const Dashboard = () => {
                             }
                           )}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-right">
                       <a
                         href={website.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-primary hover:text-primary/80 inline-flex items-center transition-colors"
+                        className="inline-flex items-center text-zinc-400 transition-colors hover:text-zinc-100"
                       >
                         <ExternalLink className="h-4 w-4" />
                       </a>
@@ -312,10 +367,10 @@ const Dashboard = () => {
                 ))}
               </TableBody>
             </Table>
-          </div>
+          </Card>
         )}
       </div>
-    </div>
+    </DashboardShell>
   );
 };
 
